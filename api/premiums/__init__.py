@@ -42,21 +42,19 @@ def _as_http(data: Any, status: int = 200) -> func.HttpResponse:
         }
     )
 
-def _run_subprocess_generator() -> List[Dict[str, Any]]:
+def _run_subprocess_generator(symbols: list[str]) -> List[Dict[str, Any]]:
     """
     Fallback path: run your existing polygon_options_delta_table.py and capture JSON from stdout.
-    You will need to add a CLI flag in your script that prints the final JSON to stdout,
-    e.g. `python polygon_options_delta_table.py --emit-json`.
+    We pass SYMBOLS via environment so the script can read it.
     """
     script = os.path.join(os.getcwd(), "polygon_options_delta_table.py")
     if not os.path.isfile(script):
         raise FileNotFoundError(f"Cannot find {script}")
 
-    # Ensure API key and any other env vars are passed through
     env = os.environ.copy()
+    if symbols:
+        env["SYMBOLS"] = ",".join(symbols)
 
-    # Run the script; it should write JSON to stdout.
-    # Modify the args if your script needs tickers, dates, etc.
     cmd = [sys.executable, script, "--emit-json"]
     logging.info("Running subprocess: %s", " ".join(cmd))
     proc = subprocess.run(cmd, env=env, check=True, capture_output=True, text=True)
@@ -69,19 +67,28 @@ def _run_subprocess_generator() -> List[Dict[str, Any]]:
     return data
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    symbols = get_symbols(req)          # <-- use the hardcoded list (or ?symbols= override)
+    symbols = get_symbols(req)
+    logging.info("GET /api/premiums (symbols=%s)", ",".join(symbols))
 
-    logging.info("GET /api/premiums")
+    # Make symbols available to in-process code too
+    if symbols:
+        os.environ["SYMBOLS"] = ",".join(symbols)
+
     try:
-        # Prefer direct import (fast, no process spawn)
+        # Prefer direct import (fast)
         if PREMIUMS_CORE and hasattr(PREMIUMS_CORE, "build_premiums"):
-            rows = PREMIUMS_CORE.build_premiums()
+            try:
+                # If your function supports a symbols kwarg, use it
+                rows = PREMIUMS_CORE.build_premiums(symbols=symbols)  # type: ignore
+            except TypeError:
+                # Backward compatible: older signature with no args
+                rows = PREMIUMS_CORE.build_premiums()  # type: ignore
             if not isinstance(rows, list):
                 raise TypeError("build_premiums() must return a list")
             return _as_http(rows, 200)
 
-        # Fallback to subprocess wrapper (no refactor)
-        rows = _run_subprocess_generator()
+        # Fallback: subprocess; pass symbols via env
+        rows = _run_subprocess_generator(symbols)
         return _as_http(rows, 200)
 
     except subprocess.CalledProcessError as e:
