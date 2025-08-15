@@ -1,0 +1,64 @@
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# --- Node / Next.js ---
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+.next/
+.next-static/
+.out/
+build/
+dist/
+.turbo/
+.vercel/
+
+# --- Env & secrets ---
+.env
+.env.*
+!.env.example
+*.local
+
+# --- Azure Static Web Apps CLI cache ---
+.swa/
+
+# --- Azure Functions (Python) ---
+api/.venv/
+api/.python_packages/
+api/obj/
+api/bin/
+api/__pycache__/
+api/**/__pycache__/
+api/local.settings.json  # contains secrets; never commit
+
+# --- Python junk ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+pip-wheel-metadata/
+
+# --- Logs & coverage ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+coverage/
+.nyc_output/
+
+# --- Build artifacts you don’t want in history (tweak as needed) ---
+*.tgz
+*.zip
+*.tar.gz
+
+# --- Large local data files (optional; keep if you truly want them in Git) ---
+details.csv
+premiums.csv
+errors.csv
+*.parquet

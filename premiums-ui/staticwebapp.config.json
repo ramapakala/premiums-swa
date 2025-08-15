@@ -1,0 +1,25 @@
+{
+  "routes": [
+    { "route": "/login",  "redirect": "/.auth/login/aadb2c" },
+    { "route": "/logout", "redirect": "/.auth/logout" },
+    { "route": "/api/*",  "allowedRoles": ["authenticated"] }
+  ],
+  "auth": {
+    "identityProviders": {
+      "customOpenIdConnectProviders": {
+        "aadb2c": {
+          "registration": {
+            "clientIdSettingName": "a78bf024-c9cc-4557-a216-ccab1515c02b",
+            "clientCredential": {
+              "clientSecretSettingName": ".ED8Q~K2mc9ek3.gW~Lncq.VvutMCxQGvVkhXbpQ"
+            },
+            "openIdConnectConfiguration": {
+              "wellKnownOpenIdConfiguration": "https://bestpremiums.ciamlogin.com/bestpremiums.onmicrosoft.com/v2.0/.well-known/openid-configuration?appid=a78bf024-c9cc-4557-a216-ccab1515c02b"
+            }
+          },
+          "login": { "scopes": ["openid", "profile", "email"] }
+        }
+      }
+    }
+  }
+}

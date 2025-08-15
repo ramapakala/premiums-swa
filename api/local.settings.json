@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "POLYGON_API_KEY": "_hgPHW9WrdBtjwB11xM_VpYl58FHzlqD"
+  }
+}
+

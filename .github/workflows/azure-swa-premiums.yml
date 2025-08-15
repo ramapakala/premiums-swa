@@ -1,0 +1,59 @@
+name: Deploy Premiums (Next + Azure Functions)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      # Expose keys your API needs
+      POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # --- Install API deps (Python) ---
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install API requirements
+        working-directory: api
+        run: |
+          python3 -m pip install -U pip
+          if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt; fi
+
+      # --- Install UI deps (Node/Next) ---
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install UI packages
+        working-directory: premiums-ui
+        run: npm ci
+
+      - name: Build UI
+        working-directory: premiums-ui
+        run: npm run build
+
+      # --- Deploy to Azure Static Web Apps (with Functions) ---
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_SWA_DEPLOYMENT_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "premiums-ui"
+          api_location: "api"
+          output_location: ".next"
