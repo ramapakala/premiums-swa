@@ -1,4 +1,4 @@
-name: Deploy Premiums (Next + Azure Functions)
+name: Deploy to existing SWA
 
 on:
   push:
@@ -6,46 +6,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Build Next.js UI
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-      - name: Install UI deps
+          node-version: '20'
+
+      - name: Install deps
         working-directory: premiums-ui
         run: npm ci
-      - name: Build UI
+
+      - name: Build Next.js
         working-directory: premiums-ui
         run: npm run build
 
-      # (Optional) Prewarm Python, not required for deploy
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install API requirements
-        working-directory: api
-        run: |
-          if [ -f requirements.txt ]; then
-            python -m pip install -U pip
-            pip install -r requirements.txt
-          fi
-
-      - name: Deploy to existing Azure Static Web App
+      - name: Deploy to SWA (existing app via token)
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_SWA_DEPLOYMENT_TOKEN }}
-          action: "upload"
-          app_location: "premiums-ui"   # your Next.js app folder
-          api_location: "api"           # your Functions folder
-          output_location: ".next"      # Next.js build output
+          action: upload
+          app_location: premiums-ui
+          output_location: .next
+          api_location: api
