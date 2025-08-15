@@ -7,6 +7,22 @@ from typing import List, Dict, Any
 
 import azure.functions as func
 
+# --- TEMP: hardcoded symbols for testing ---
+HARDCODED_SYMBOLS = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL"]
+
+def get_symbols(req) -> list[str]:
+    """
+    Priority for testing:
+    1) ?symbols=AAPL,MSFT (optional override from query string)
+    2) HARDCODED_SYMBOLS (default)
+    """
+    qs = (req.params.get("symbols") or "").strip()
+    if qs:
+        return [s.strip().upper() for s in qs.split(",") if s.strip()]
+    return HARDCODED_SYMBOLS
+# -------------------------------------------
+
+
 # Try to import pure-Python implementation first (recommended).
 PREMIUMS_CORE = None
 try:
@@ -53,6 +69,8 @@ def _run_subprocess_generator() -> List[Dict[str, Any]]:
     return data
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
+    symbols = get_symbols(req)          # <-- use the hardcoded list (or ?symbols= override)
+
     logging.info("GET /api/premiums")
     try:
         # Prefer direct import (fast, no process spawn)
