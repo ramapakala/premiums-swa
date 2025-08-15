@@ -9,9 +9,9 @@
       "customOpenIdConnectProviders": {
         "aadb2c": {
           "registration": {
-            "clientIdSettingName": "a78bf024-c9cc-4557-a216-ccab1515c02b",
+            "clientIdSettingName": "AADB2C_PROVIDER_CLIENT_ID",
             "clientCredential": {
-              "clientSecretSettingName": ".ED8Q~K2mc9ek3.gW~Lncq.VvutMCxQGvVkhXbpQ"
+              "clientSecretSettingName": "AADB2C_PROVIDER_CLIENT_SECRET"
             },
             "openIdConnectConfiguration": {
               "wellKnownOpenIdConfiguration": "https://bestpremiums.ciamlogin.com/bestpremiums.onmicrosoft.com/v2.0/.well-known/openid-configuration?appid=a78bf024-c9cc-4557-a216-ccab1515c02b"
