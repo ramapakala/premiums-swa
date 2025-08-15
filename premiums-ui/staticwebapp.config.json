@@ -14,7 +14,7 @@
               "clientSecretSettingName": "AADB2C_PROVIDER_CLIENT_SECRET"
             },
             "openIdConnectConfiguration": {
-              "wellKnownOpenIdConfiguration": "PASTE-YOUR-WELL-KNOWN-URL"
+              "wellKnownOpenIdConfiguration": "https://bestpremiums.ciamlogin.com/bestpremiums.onmicrosoft.com/v2.0/.well-known/openid-configuration?appid=a78bf024-c9cc-4557-a216-ccab1515c02b"
             }
           },
           "login": { "scopes": ["openid", "profile", "email"] }
