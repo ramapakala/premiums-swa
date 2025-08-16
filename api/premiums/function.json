@@ -1,11 +1,13 @@
 {
+  "scriptFile": "__init__.py",
+  "entryPoint": "main",
   "bindings": [
     {
-      "authLevel": "anonymous",
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["get"],
+      "authLevel": "anonymous",
+      "methods": [ "get" ],
       "route": "premiums"
     },
     {
