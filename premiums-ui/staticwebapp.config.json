@@ -22,6 +22,9 @@
       }
     }
   },
-  "navigationFallback": { "rewrite": "/index.html" },
+"navigationFallback": {
+  "rewrite": "/index.html",
+  "exclude": ["/api/*", "/.auth/*"]
+},
   "responseOverrides": { "401": { "redirect": "/login", "statusCode": 302 } }
 }
