@@ -1,6 +1,6 @@
 {
   "routes": [
-    { "route": "/login",  "redirect": "/.auth/login/aadb2c" },
+    { "route": "/login",  "redirect": "/.auth/login/b2c" },
     { "route": "/logout", "redirect": "/.auth/logout?post_logout_redirect_uri=/" },
     { "route": "/api/*",  "allowedRoles": ["authenticated"] }
   ],
