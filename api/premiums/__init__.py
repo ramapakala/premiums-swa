@@ -6,6 +6,8 @@ import subprocess
 from typing import List, Dict, Any
 
 import azure.functions as func
+import traceback
+from pathlib import Path
 
 # --- TEMP: hardcoded symbols for testing ---
 HARDCODED_SYMBOLS = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL"]
@@ -93,7 +95,24 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     except subprocess.CalledProcessError as e:
         logging.exception("Generator subprocess failed")
-        return _as_http({"error": "generator_failed", "detail": e.stderr}, 500)
+        return _as_http({
+            "error": "generator_failed",
+            "stderr": e.stderr,
+            "returncode": e.returncode,
+            "cmd": getattr(e, "cmd", None)
+        }, 500)
+
     except Exception as e:
         logging.exception("Error generating premiums")
-        return _as_http({"error": "internal_error", "detail": str(e)}, 500)
+        here = Path(__file__).resolve().parent
+        script_path = here / "polygon_options_delta_table.py"
+        return _as_http({
+            "error": "internal_error",
+            "detail": str(e),
+            "traceback": traceback.format_exc(),
+            "cwd": os.getcwd(),
+            "func_dir": str(here),
+            "script_exists": script_path.exists(),
+            "dir_listing": sorted(os.listdir(here)),
+            "env_SYMBOLS": os.getenv("SYMBOLS", "")
+        }, 500)
