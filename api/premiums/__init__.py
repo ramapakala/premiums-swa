@@ -69,6 +69,16 @@ def _run_subprocess_generator(symbols: list[str]) -> List[Dict[str, Any]]:
     return data
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
+        # --- runtime diagnostics ---
+    if req.params.get("diag") == "runtime":
+        import sys, platform
+        return _as_http({
+            "python": sys.version,
+            "executable": sys.executable,
+            "platform": platform.platform()
+        }, 200)
+    # --- end diagnostics ---
+
     symbols = get_symbols(req)
     logging.info("GET /api/premiums (symbols=%s)", ",".join(symbols))
 
